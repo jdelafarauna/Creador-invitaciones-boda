@@ -42,5 +42,3 @@ Al pulsar "Guardar", la herramienta realiza una limpieza profunda del código:
 - Desactiva el modo edición para que los invitados no puedan borrar nada.
 - Genera un archivo `.html` optimizado.
 
----# Creador-invitaciones-boda
-# Creador-invitaciones-boda

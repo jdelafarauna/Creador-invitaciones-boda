@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constructor Modular de Invitaciones Pro</title>
+    <!-- Expanded Font Library -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;700&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Lora:ital,wght@0,400;1,400&family=Cinzel:wght@400;700&family=Sacramento&family=Parisienne&family=Bodoni+Moda:ital,wght@0,400;1,400&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Raleway:wght@300;400&family=Quicksand:wght@300;400&family=Petit+Formal+Script&family=Pinyon+Script&family=Unna:ital,wght@0,400;1,400&family=Marcellus&family=Alice&family=Libre+Baskerville:ital@0;1&family=Italianno&family=Allura&display=swap" rel="stylesheet">
+    <style id="main-styles">
+        :root {
+            --primary-color: #d4af37;
+            --text-color: #333;
+            --bg-color: #ffffff;
+            --accent-bg: #fdfbf7;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 140px;
+        }
+
+        #invitacion-final {
+            width: 100%;
+            max-width: 500px;
+            background-color: var(--bg-color);
+            margin: 20px auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            overflow: visible;
+            text-align: center;
+        }
+
+        section {
+            padding: 60px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            background-color: var(--bg-color);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+            cursor: pointer;
+            min-height: 100px;
+        }
+
+        .hero { background-color: var(--accent-bg) !important; }
+
+        /* Disparadores de Inserción */
+        .insert-trigger {
+            height: 4px;
+            margin: -2px 0;
+            position: relative;
+            z-index: 100;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+            background: transparent;
+        }
+
+        .insert-trigger:hover {
+            height: 30px;
+            margin: -15px 0;
+            background: rgba(212, 175, 55, 0.15);
+        }
+
+        .insert-trigger::after {
+            content: '+';
+            display: none;
+            background: var(--primary-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .insert-trigger:hover::after { display: block; }
+
+        .editable-wrapper {
+            position: relative;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+            padding: 5px;
+        }
+
+        .editable-wrapper:hover { outline: 1px dashed var(--primary-color); background-color: rgba(212, 175, 55, 0.03); }
+
+        .columns-wrapper { display: flex; gap: 15px; margin-bottom: 10px; text-align: left; }
+        @media (max-width: 480px) { .columns-wrapper { flex-direction: column; } }
+        .column { flex: 1; min-width: 0; position: relative; border: 1px dashed transparent; padding: 10px 5px; border-radius: 8px; }
+        .column:hover { border-color: #ddd; }
+        .column-elements { min-height: 50px; }
+
+        .map-real-container { width: 100%; height: 250px; background: #eee; border-radius: 8px; overflow: hidden; position: relative; }
+        .map-real-container iframe { width: 100%; height: 100%; border: none; }
+        .map-overlay-btn { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; display: none; z-index: 10; }
+        .map-real-container:hover .map-overlay-btn { display: block; }
+
+        .el-controls { position: absolute; top: -15px; right: 0; display: none; gap: 4px; z-index: 30; }
+        .editable-wrapper:hover > .el-controls { display: flex; }
+
+        .el-btn { width: 24px; height: 24px; border-radius: 50%; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 12px; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .remove-el-btn { background: #ff4444; }
+        .style-el-btn { background: #007bff; }
+
+        .style-bar { position: absolute; top: -70px; left: 50%; transform: translateX(-50%); background: #222; padding: 8px 12px; border-radius: 8px; display: none; gap: 10px; align-items: center; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.4); color: white; }
+        .style-bar select, .style-bar input { background: #444; color: white; border: 1px solid #555; border-radius: 4px; font-size: 10px; padding: 3px; }
+        .style-bar label { font-size: 8px; text-transform: uppercase; color: #aaa; display: block; margin-bottom: 2px; }
+
+        [contenteditable="true"] { cursor: text; display: block; width: 100%; border-radius: 4px; box-sizing: border-box; outline: none; }
+        h1 { font-family: 'Playfair Display', serif; font-size: 2.5em; margin: 0; color: var(--primary-color); }
+        h2 { font-family: 'Playfair Display', serif; font-size: 1.8em; margin: 0; }
+        .fecha { font-size: 1.2em; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
+        .divider { width: 50px; height: 2px; background-color: var(--primary-color); margin: 0 auto; }
+        
+        .photo-container { width: 100%; height: 200px; background-color: rgba(224, 224, 224, 0.4); display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; cursor: pointer; border-radius: 6px; }
+        .photo-container img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-container span { position: absolute; color: #777; font-style: italic; padding: 15px; font-size: 0.75em; }
+
+        .btn { display: inline-block; padding: 10px 25px; background-color: var(--primary-color); color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 0.9em; }
+
+        .section-controls, .column-controls { display: flex; justify-content: center; gap: 5px; opacity: 0; transition: opacity 0.3s; z-index: 15; margin-top: 10px; }
+        section:hover .section-controls, .column:hover .column-controls { opacity: 1; }
+
+        .control-dot { background: #444; color: white; border: none; padding: 3px 8px; border-radius: 10px; font-size: 9px; cursor: pointer; }
+        .control-dot:hover { background: var(--primary-color); }
+
+        .delete-section-btn { position: absolute; top: 10px; right: 10px; background: rgba(255, 68, 68, 0.8); color: white; border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; z-index: 20; display: none; }
+        section:hover .delete-section-btn { display: block; }
+
+        .admin-controls { position: fixed; bottom: 0; width: 100%; background: #111; padding: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); z-index: 1000; color: white; }
+        .save-btn { background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .add-sec-btn { background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        
+        input[type="file"] { display: none; }
+        input[type="color"] { border: none; width: 25px; height: 25px; cursor: pointer; background: none; }
+        .hint-bg { position: absolute; top: 5px; left: 10px; font-size: 9px; color: var(--primary-color); opacity: 0.5; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <div id="invitacion-final">
+        <!-- Los disparadores y secciones se generarán dinámicamente o estarán aquí -->
+    </div>
+
+    <div class="admin-controls">
+        <div class="control-group" style="display:flex; align-items:center; gap:5px;">
+            <label style="font-size:12px">Fondo:</label>
+            <input type="color" value="#ffffff" onchange="updateColor('--bg-color', this.value)">
+        </div>
+        <div class="control-group" style="display:flex; align-items:center; gap:5px;">
+            <label style="font-size:12px">Cabecera:</label>
+            <input type="color" value="#fdfbf7" onchange="updateColor('--accent-bg', this.value)">
+        </div>
+        <button class="add-sec-btn" onclick="addNewSection()">+ Añadir Sección al Final</button>
+        <button class="save-btn" onclick="exportarInvitacion()">GUARDAR DISEÑO</button>
+    </div>
+
+    <script>
+        const FONT_OPTIONS = `
+            <option value="'Playfair Display', serif">Playfair (Elegante)</option>
+            <option value="'Montserrat', sans-serif">Montserrat (Moderno)</option>
+            <option value="'Dancing Script', cursive">Dancing Script (Manuscrita)</option>
+            <option value="'Great Vibes', cursive">Great Vibes (Clásica Romántica)</option>
+            <option value="'Sacramento', cursive">Sacramento (Fina)</option>
+            <option value="'Parisienne', cursive">Parisienne (Sofisticada)</option>
+            <option value="'Petit Formal Script', cursive">Petit Formal</option>
+            <option value="'Pinyon Script', cursive">Pinyon (Artesanal)</option>
+            <option value="'Italianno', cursive">Italianno</option>
+            <option value="'Allura', cursive">Allura</option>
+            <option value="'Cinzel', serif">Cinzel (Romano)</option>
+            <option value="'Bodoni Moda', serif">Bodoni (Moda)</option>
+            <option value="'Cormorant Garamond', serif">Cormorant (Libro)</option>
+            <option value="'Libre Baskerville', serif">Baskerville</option>
+            <option value="'Lora', serif">Lora</option>
+            <option value="'Unna', serif">Unna</option>
+            <option value="'Alice', serif">Alice</option>
+            <option value="'Marcellus', serif">Marcellus</option>
+            <option value="'Raleway', sans-serif">Raleway</option>
+            <option value="'Quicksand', sans-serif">Quicksand</option>
+        `;
+
+        function updateColor(variable, value) { document.documentElement.style.setProperty(variable, value); }
+        function handleBgClick(event, section) { if (event.target === section) section.querySelector('.bg-input').click(); }
+        function deleteSection(btn) { 
+            if (confirm('¿Eliminar sección completa?')) {
+                const sec = btn.parentElement;
+                const prevTrigger = sec.previousElementSibling;
+                sec.remove();
+                if (prevTrigger && prevTrigger.classList.contains('insert-trigger')) prevTrigger.remove();
+            }
+        }
+        function removeElement(btn) { btn.closest('.editable-wrapper').remove(); }
+        function toggleStyleBar(btn) {
+            const bar = btn.closest('.editable-wrapper').querySelector('.style-bar');
+            bar.style.display = (bar.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        function setMapAddress(btn) {
+            const address = prompt("Introduce la dirección (ej: Puerta del Sol, Madrid):");
+            if (address) {
+                const iframe = btn.nextElementSibling;
+                iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
+            }
+        }
+
+        function changeTextStyle(el, prop, value) {
+            const target = el.closest('.editable-wrapper').querySelector('[contenteditable], h1, h2, p, .fecha, a');
+            if (!target) return;
+            if (prop === 'fontSize') value = value + 'px';
+            target.style[prop] = value;
+        }
+
+        function createInsertTrigger() {
+            const div = document.createElement('div');
+            div.className = 'insert-trigger';
+            div.title = "Insertar sección aquí";
+            div.onclick = function() {
+                const newSec = createSectionNode();
+                this.after(newSec);
+                newSec.after(createInsertTrigger());
+            };
+            return div;
+        }
+
+        function createSectionNode() {
+            const section = document.createElement('section');
+            section.onclick = function(e) { handleBgClick(e, this); };
+            section.innerHTML = `
+                <button class="delete-section-btn" onclick="deleteSection(this)">×</button>
+                <span class="hint-bg">Fondo</span>
+                <input type="file" class="bg-input" accept="image/*" onchange="previewBg(event, this)">
+                <div id="elements-container"></div>
+                <div class="section-controls">
+                    <button class="control-dot" onclick="event.stopPropagation(); addElement(this, 'text')">+ Texto</button>
+                    <button class="control-dot" onclick="event.stopPropagation(); addElement(this, 'title')">+ Título</button>
+                    <button class="control-dot" onclick="event.stopPropagation(); addElement(this, 'image')">+ Imagen</button>
+                    <button class="control-dot" onclick="event.stopPropagation(); addElement(this, 'map')">+ Mapa</button>
+                    <button class="control-dot" onclick="event.stopPropagation(); addElement(this, 'columns')">+ Columnas</button>
+                </div>
+            `;
+            return section;
+        }
+
+        function addNewSection() {
+            const container = document.getElementById('invitacion-final');
+            if (container.children.length === 0) container.appendChild(createInsertTrigger());
+            const newSec = createSectionNode();
+            container.appendChild(newSec);
+            container.appendChild(createInsertTrigger());
+            addElement(newSec.querySelector('.control-dot'), 'title', 'Nueva Sección');
+        }
+
+        function addElement(btn, type, content = "") {
+            let container;
+            const col = btn.closest('.column');
+            container = col ? col.querySelector('.column-elements') : btn.closest('section').querySelector('#elements-container');
+
+            const wrapper = document.createElement('div');
+            wrapper.className = "editable-wrapper";
+            
+            let elHtml = `
+                <div class="el-controls">
+                    ${(type !== 'image' && type !== 'columns' && type !== 'map') ? '<button class="el-btn style-el-btn" onclick="toggleStyleBar(this)">🎨</button>' : ''}
+                    <button class="el-btn remove-el-btn" onclick="removeElement(this)">×</button>
+                </div>
+                ${(type !== 'image' && type !== 'columns' && type !== 'map') ? `
+                <div class="style-bar">
+                    <div><label>Color</label><input type="color" onchange="changeTextStyle(this, 'color', this.value)"></div>
+                    <div><label>Size</label><input type="number" style="width:40px" value="20" onchange="changeTextStyle(this, 'fontSize', this.value)"></div>
+                    <div><label>Fuente</label><select class="font-sel" onchange="changeTextStyle(this, 'fontFamily', this.value)">${FONT_OPTIONS}</select></div>
+                </div>` : ''}
+            `;
+
+            if (type === 'text') elHtml += `<p contenteditable="true" onclick="event.stopPropagation()">${content || 'Escribe aquí...'}</p>`;
+            else if (type === 'title') elHtml += `<h2 contenteditable="true" onclick="event.stopPropagation()">${content || 'Título'}</h2>`;
+            else if (type === 'image') elHtml += `<div class="photo-container" onclick="event.stopPropagation(); triggerUpload(this)"><span>Subir foto</span><img src="" style="display:none"><input type="file" accept="image/*" onchange="previewImage(event, this)"></div>`;
+            else if (type === 'divider') elHtml += `<div class="divider"></div>`;
+            else if (type === 'map') elHtml += `<div class="map-real-container"><div class="map-overlay-btn" onclick="setMapAddress(this)">Configurar Dirección</div><iframe src="https://www.google.com/maps?q=Madrid&output=embed"></iframe></div>`;
+            else if (type === 'columns') {
+                elHtml += `
+                <div class="columns-wrapper">
+                    <div class="column"><div class="column-elements"></div><div class="column-controls"><button class="control-dot" onclick="event.stopPropagation(); addElement(this, 'text')">+ T</button><button class="control-dot" onclick="event.stopPropagation(); addElement(this, 'title')">+ H</button><button class="control-dot" onclick="event.stopPropagation(); addElement(this, 'map')">+ M</button></div></div>
+                    <div class="column"><div class="column-elements"></div><div class="column-controls"><button class="control-dot" onclick="event.stopPropagation(); addElement(this, 'text')">+ T</button><button class="control-dot" onclick="event.stopPropagation(); addElement(this, 'title')">+ H</button><button class="control-dot" onclick="event.stopPropagation(); addElement(this, 'map')">+ M</button></div></div>
+                </div>`;
+            }
+            
+            wrapper.innerHTML = elHtml;
+            container.appendChild(wrapper);
+            if (type === 'columns') wrapper.querySelectorAll('.font-sel').forEach(sel => sel.innerHTML = FONT_OPTIONS);
+            if (type === 'map') { const address = prompt("Dirección para el mapa:"); if(address) wrapper.querySelector('iframe').src = `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`; }
+        }
+
+        // Initialize template
+        window.onload = function() {
+            const container = document.getElementById('invitacion-final');
+            container.appendChild(createInsertTrigger());
+            
+            // Portada
+            addNewSection();
+            const s1 = document.querySelectorAll('section')[0];
+            s1.className += " hero";
+            s1.querySelector('#elements-container').innerHTML = "";
+            addElement(s1.querySelector('.control-dot'), 'image');
+            addElement(s1.querySelector('.control-dot'), 'title', 'Nombre & Nombre');
+            addElement(s1.querySelector('.control-dot'), 'divider');
+            addElement(s1.querySelector('.control-dot'), 'text', '20 . 06 . 2026');
+
+            // Mensaje
+            addNewSection();
+            const s2 = document.querySelectorAll('section')[1];
+            s2.querySelector('#elements-container').innerHTML = "";
+            addElement(s2.querySelector('.control-dot'), 'text', '¡Nos casamos! Queremos compartir con vosotros este día tan especial.');
+
+            // Ubicación
+            addNewSection();
+            const s3 = document.querySelectorAll('section')[2];
+            s3.querySelector('#elements-container').innerHTML = "";
+            addElement(s3.querySelector('.control-dot'), 'columns');
+            const cols = s3.querySelectorAll('.column-elements');
+            addElement(cols[0].closest('.column').querySelector('.control-dot'), 'title', 'Ubicación');
+            addElement(cols[0].closest('.column').querySelector('.control-dot'), 'text', 'Dirección de la ceremonia y celebración.');
+            addElement(cols[1].closest('.column').querySelector('.control-dot'), 'map');
+
+            // Confirmación
+            addNewSection();
+            const s4 = document.querySelectorAll('section')[3];
+            s4.querySelector('#elements-container').innerHTML = "";
+            addElement(s4.querySelector('.control-dot'), 'title', 'Confirmación');
+            const wrap = document.createElement('div');
+            wrap.className = "editable-wrapper";
+            wrap.innerHTML = `<div class="el-controls"><button class="el-btn remove-el-btn" onclick="removeElement(this)">×</button></div><a href="#" class="btn">Confirmar Aquí</a>`;
+            s4.querySelector('#elements-container').appendChild(wrap);
+        };
+
+        function triggerUpload(el) { el.querySelector('input').click(); }
+        function previewImage(event, input) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const container = input.parentElement;
+                    const img = container.querySelector('img');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    container.querySelector('span').style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+        function previewBg(event, input) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) { input.parentElement.style.backgroundImage = `url(${e.target.result})`; }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function exportarInvitacion() {
+            const clone = document.getElementById('invitacion-final').cloneNode(true);
+            const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-color').trim();
+            const accentBg = getComputedStyle(document.documentElement).getPropertyValue('--accent-bg').trim();
+
+            clone.querySelectorAll('.insert-trigger, .delete-section-btn, .el-controls, .style-bar, .section-controls, .column-controls, .hint-bg, .map-overlay-btn, input').forEach(el => el.remove());
+            clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+            clone.querySelectorAll('.photo-container span').forEach(el => { const img = el.nextElementSibling; if (!img || img.style.display === 'none') el.innerText = ""; else el.remove(); });
+            clone.querySelectorAll('section, .photo-container, div, p, h1, h2, a, .fecha, .column').forEach(el => {
+                el.removeAttribute('onclick');
+                el.style.cursor = 'default';
+                if (el.classList.contains('column')) el.style.border = 'none';
+            });
+
+            const styleContent = document.getElementById('main-styles').innerHTML;
+            const cleanStyle = styleContent.replace(/:root\s*{[^}]*}/, "");
+
+            const finalHtml = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestra Invitación</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;700&family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Lora:ital,wght@0,400;1,400&family=Cinzel:wght@400;700&family=Sacramento&family=Parisienne&family=Bodoni+Moda:ital,wght@0,400;1,400&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Raleway:wght@300;400&family=Quicksand:wght@300;400&family=Petit+Formal+Script&family=Pinyon+Script&family=Unna:ital,wght@0,400;1,400&family=Marcellus&family=Alice&family=Libre+Baskerville:ital@0;1&family=Italianno&family=Allura&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary-color: #d4af37; --text-color: #333; --bg-color: ${bgColor}; --accent-bg: ${accentBg}; }
+        ${cleanStyle}
+        .admin-controls, .insert-trigger, .delete-section-btn, .el-controls, .style-bar, .section-controls, .column-controls, .hint-bg, .map-overlay-btn, input { display: none !important; }
+        .editable-wrapper:hover { outline: none !important; background-color: transparent !important; }
+        section:hover { box-shadow: none !important; }
+        body { padding-bottom: 0; }
+        .column { border: none !important; }
+    </style>
+</head>
+<body>${clone.outerHTML}</body>
+</html>`;
+
+            const blob = new Blob([finalHtml], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'invitacion_final.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+</html>

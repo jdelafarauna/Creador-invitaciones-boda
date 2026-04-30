@@ -2,6 +2,11 @@
 
 Esta es una herramienta interactiva, visual y modular para crear invitaciones de boda elegantes directamente desde tu navegador, sin necesidad de saber programación ni usar herramientas externas como Canva.
 
+## 🌐 Acceso a la web
+
+Puedes probar la herramienta directamente aquí:
+[**invitaciones-boda.jdelafarauna.es**](https://invitaciones-boda.jdelafarauna.es)
+
 ## ✨ Características Principales
 
 - **Edición Visual Directa**: Haz clic en cualquier texto para cambiar su contenido.
@@ -41,4 +46,3 @@ Al pulsar "Guardar", la herramienta realiza una limpieza profunda del código:
 - Quita las líneas de ayuda y bordes de diseño.
 - Desactiva el modo edición para que los invitados no puedan borrar nada.
 - Genera un archivo `.html` optimizado.
-
